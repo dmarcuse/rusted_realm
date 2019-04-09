@@ -1,0 +1,11 @@
+[package]
+name = "rotmg_networking"
+version = "0.1.0"
+authors = ["Dominic Marcuse <dominic@marcuse.us>"]
+edition = "2018"
+
+[dependencies]
+failure = "0.1.5"
+failure_derive = "0.1.5"
+bytes = "0.4.12"
+num = "0.2.0"

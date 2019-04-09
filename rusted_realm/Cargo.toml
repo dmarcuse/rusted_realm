@@ -1,0 +1,7 @@
+[package]
+name = "rusted_realm"
+version = "0.1.0"
+authors = ["Dominic Marcuse <dominic@marcuse.us>"]
+edition = "2018"
+
+[dependencies]
