@@ -4,3 +4,4 @@
 #![deny(bare_trait_objects)]
 
 pub mod adapters;
+pub mod rc4;
