@@ -4,9 +4,11 @@
 use super::{Adapter, Error, Result};
 use bytes::{Buf, BufMut};
 use num::{FromPrimitive, ToPrimitive};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::marker::PhantomData;
 use std::ops::Deref;
+use std::result::Result as StdResult;
 
 /// A wrapper around a value (of type `T`) which can be serialized or
 /// deserialized by prefixing the data with an integer representing the length
@@ -206,5 +208,17 @@ mod tests {
             RLE::<String, u8>::new(large).put_be(&mut buf),
             Err(Error::InvalidData(_))
         )
+    }
+}
+
+impl<T: Serialize, S> Serialize for RLE<T, S> {
+    fn serialize<SE: Serializer>(&self, serializer: SE) -> StdResult<SE::Ok, SE::Error> {
+        self.inner.serialize(serializer)
+    }
+}
+
+impl<'de, T: Deserialize<'de>, S> Deserialize<'de> for RLE<T, S> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> StdResult<Self, D::Error> {
+        T::deserialize(deserializer).map(Self::new)
     }
 }

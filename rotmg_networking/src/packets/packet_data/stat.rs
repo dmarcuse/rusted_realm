@@ -4,6 +4,7 @@
 
 use crate::adapters::{Adapter, Error, Result, RLE};
 use bytes::{Buf, BufMut};
+use serde::{Deserialize, Serialize};
 
 macro_rules! is_str {
     (String) => {
@@ -21,7 +22,7 @@ macro_rules! define_stat_types {
         ),* $(,)?
     ) => {
         /// The type of a stat specified by a `StatData`
-        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+        #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash, Serialize, Deserialize)]
         #[repr(u8)]
         #[allow(non_camel_case_types)]
         pub enum StatType {
@@ -177,7 +178,7 @@ impl Adapter for StatType {
 }
 
 /// Stat data, either of string or integer type
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum StatData {
     String(StatType, String),
     Integer(StatType, i32),

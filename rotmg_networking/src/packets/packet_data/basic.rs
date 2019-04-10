@@ -5,6 +5,7 @@
 use super::stat::StatData;
 use crate::adapters::{Adapter, Result, RLE};
 use bytes::{Buf, BufMut};
+use serde::{Deserialize, Serialize};
 
 macro_rules! define_data {
     ($name:ident {
@@ -12,7 +13,7 @@ macro_rules! define_data {
             $fieldname:ident: $fieldtype:ty
         ),* $(,)?
     }) => {
-        #[derive(Debug, PartialEq, Clone)]
+        #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
         pub struct $name {
             $(
                 pub $fieldname: $fieldtype

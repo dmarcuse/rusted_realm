@@ -1,4 +1,4 @@
-//! Definitions and adapters for ROTMG packet data types
+//! Data types used in packets
 
 mod basic;
 mod stat;
