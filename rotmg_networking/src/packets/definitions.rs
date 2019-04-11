@@ -78,6 +78,11 @@ macro_rules! define_side {
     };
 }
 
+/// Consumes a token tree and expands to nothing
+macro_rules! consume {
+    ($tokens:tt) => {};
+}
+
 /// Define all the other stuff
 macro_rules! define_packets {
     (
@@ -245,6 +250,48 @@ macro_rules! define_packets {
                 arr
             };
 
+            /// Attempt to get the `PacketType` represented by the given byte.
+            /// Note that this byte representation does not match the one used
+            /// by the official ROTMG client.
+            pub fn from_byte(byte: u8) -> Option<PacketType> {
+                Self::VALID_TYPES[byte as usize]
+            }
+
+            /// Get a set of all packet types, as a reference to a static,
+            /// lazily-initialized `HashSet`.
+            pub fn get_all_types() -> &'static HashSet<PacketType> {
+                lazy_static! {
+                    static ref ALL_TYPES: HashSet<PacketType> = {
+                        let mut set = HashSet::with_capacity(255);
+
+                        $(
+                            $(
+                                set.insert(PacketType::$name);
+                            )*
+                        )*
+
+                        set.shrink_to_fit();
+                        set
+                    };
+                }
+
+                &ALL_TYPES
+            }
+
+            /// The number of different packet types
+            pub const NUM_TYPES: usize = {
+                let mut count = 0;
+
+                $(
+                    $(
+                        count += 1;
+                        consume!($name);
+                    )*
+                )*
+
+                count
+            };
+
             const DESERIALIZERS: [Option<PacketDeserializer>; 255] = {
                 let mut arr: [Option<PacketDeserializer>; 255] = [None; 255];
 
@@ -282,7 +329,8 @@ macro_rules! define_packets {
                 Self::SERIALIZERS[self as usize].unwrap()
             }
 
-            /// Get a map of packet types to names
+            /// Get a map of packet types to names, as a reference to a static,
+            /// lazily-initialized `HashMap`
             pub fn get_name_mappings() -> &'static HashMap<PacketType, &'static str> {
                 lazy_static! {
                     static ref NAMES: HashMap<PacketType, &'static str> = {
@@ -351,7 +399,7 @@ mod unified_definitions {
     use bytes::{Buf, BufMut};
     use lazy_static::lazy_static;
     use serde::{Deserialize, Serialize};
-    use std::collections::HashMap;
+    use std::collections::{HashMap, HashSet};
     use std::convert::{TryFrom, TryInto};
     use std::result::Result as StdResult;
 
