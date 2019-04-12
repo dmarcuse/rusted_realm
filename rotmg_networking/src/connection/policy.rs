@@ -1,6 +1,9 @@
 //! Handle Flash socket policy file requests
 //!
-//! Flash clients
+//! Flash clients may request a policy file when opening a socket connection to
+//! check whether the server allows the connection. This module provides a
+//! function to handle these requests, replying with a policy file which allows
+//! connections from any host to any local port from flash clients.
 
 use crate::ext::TcpStreamExt;
 use futures::future::Loop;

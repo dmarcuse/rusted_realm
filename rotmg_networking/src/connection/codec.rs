@@ -1,4 +1,4 @@
-//! A tokio codec to frame ROTMG packets
+//! Tokio codec for framing ROTMG packets as `RawPacket` instances
 
 use super::raw_packet::RawPacket;
 use crate::mappings::Mappings;
