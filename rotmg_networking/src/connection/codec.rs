@@ -1,9 +1,12 @@
 //! A tokio codec to frame ROTMG packets
 
+use super::raw_packet::RawPacket;
 use crate::mappings::Mappings;
 use crate::rc4::Rc4;
+use bytes::{Buf, BytesMut};
 use failure_derive::Fail;
-use std::io::Error as IoError;
+use std::io::{Cursor, Error as IoError};
+use tokio::codec::{Decoder, Encoder};
 
 /// The codec for framing and encrypting/decrypting ROTMG packets. This struct
 /// contains the minimum state necessary - just the RC4 ciphers for sending and
@@ -20,6 +23,10 @@ pub enum CodecError {
     /// A low level IO error
     #[fail(display = "IO error: {}", _0)]
     IoError(IoError),
+
+    /// The packet size was invalid
+    #[fail(display = "Invalid packet size: {}", _0)]
+    InvalidSize(usize),
 }
 
 impl From<IoError> for CodecError {
@@ -41,5 +48,63 @@ impl Codec {
     pub fn new_as_client(mappings: &Mappings) -> Self {
         let (send_rc4, recv_rc4) = mappings.get_ciphers();
         Self { recv_rc4, send_rc4 }
+    }
+}
+
+impl Decoder for Codec {
+    type Item = RawPacket;
+    type Error = CodecError;
+
+    fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
+        if src.len() < 4 {
+            // we need more bytes to determine the packet size
+            return Ok(None);
+        }
+
+        // get the total length of the packet
+        let packet_size = {
+            let mut cursor = Cursor::new(&src);
+            cursor.get_u32_be() as usize
+        };
+
+        // the smallest valid packet is just a header, 5 bytes
+        if packet_size < 5 {
+            return Err(CodecError::InvalidSize(packet_size));
+        }
+
+        if src.len() < packet_size {
+            // we haven't received the full packet yet, we need more bytes
+            return Ok(None);
+        }
+
+        // full packet has been received
+        // remove the entire packet from the buffer
+        let mut data = src.split_to(packet_size);
+
+        // decrypt the packet contents
+        self.recv_rc4.process(&mut data[5..]);
+
+        // yield the raw packet
+        Ok(Some(RawPacket::new(data.freeze())))
+    }
+}
+
+impl Encoder for Codec {
+    type Item = RawPacket;
+    type Error = CodecError;
+
+    fn encode(&mut self, item: Self::Item, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        // convert the packet back into bytes
+        let packet = item.into_bytes();
+
+        // make the packet mutable so we can encrypt the data
+        let mut packet = BytesMut::from(packet);
+
+        // encrypt the packet contents
+        self.send_rc4.process(&mut packet[5..]);
+
+        // finally, write the packet
+        dst.extend_from_slice(&packet[..]);
+        Ok(())
     }
 }

@@ -36,9 +36,15 @@ pub enum Error<T: Debug + Send + Sync + 'static> {
 }
 
 impl RawPacket {
+    /// Create a new `RawPacket` from the given bytes
     pub(crate) fn new(bytes: Bytes) -> RawPacket {
         debug_assert!(bytes.len() >= 5, "packet must be at least 5 bytes");
         Self { bytes }
+    }
+
+    /// Convert this `RawPacket` into the underlying `Bytes`
+    pub(crate) fn into_bytes(self) -> Bytes {
+        self.bytes
     }
 
     /// Get the total length of this packet, in bytes.
