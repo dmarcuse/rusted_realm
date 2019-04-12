@@ -2,7 +2,7 @@
 
 #![allow(missing_docs)]
 
-use crate::adapters::{Adapter, Error, Result, RLE};
+use crate::adapter::{Adapter, Error, Result, RLE};
 use bytes::{Buf, BufMut};
 use serde::{Deserialize, Serialize};
 

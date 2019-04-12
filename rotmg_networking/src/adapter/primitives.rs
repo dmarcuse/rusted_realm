@@ -71,7 +71,7 @@ impl Adapter for bool {
 
 #[cfg(test)]
 mod tests {
-    use crate::adapters::Adapter;
+    use crate::adapter::Adapter;
     use bytes::{Buf, IntoBuf};
 
     #[test]

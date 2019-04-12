@@ -29,14 +29,16 @@ impl From<IoError> for CodecError {
 }
 
 impl Codec {
-    /// Construct a new codec for communicating with a game client
-    pub fn new_client(mappings: &Mappings) -> Self {
+    /// Construct a new codec for communicating with a game client - i.e. with
+    /// this side of the connection acting as the server
+    pub fn new_as_server(mappings: &Mappings) -> Self {
         let (recv_rc4, send_rc4) = mappings.get_ciphers();
         Self { recv_rc4, send_rc4 }
     }
 
-    /// Construct a new codec for communicating with a game client
-    pub fn new_server(mappings: &Mappings) -> Self {
+    /// Construct a new codec for communicating with a game client - i.e. with
+    /// this side of the connection acting as the client
+    pub fn new_as_client(mappings: &Mappings) -> Self {
         let (send_rc4, recv_rc4) = mappings.get_ciphers();
         Self { recv_rc4, send_rc4 }
     }

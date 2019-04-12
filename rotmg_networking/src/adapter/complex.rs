@@ -27,7 +27,7 @@ impl<T: Adapter> Adapter for Option<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::adapters::Adapter;
+    use crate::adapter::Adapter;
     use bytes::IntoBuf;
 
     #[test]

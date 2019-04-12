@@ -19,7 +19,7 @@ use std::result::Result as StdResult;
 ///
 /// Encode a vector of bytes, prefixed with an unsigned 16-bit length:
 /// ```
-/// # use crate::rotmg_networking::adapters::{Adapter, RLE};
+/// # use crate::rotmg_networking::adapter::{Adapter, RLE};
 /// # use std::io::Cursor;
 /// // wrap the bytes
 /// let bytes: RLE<Vec<u8>> = RLE::new(vec![1, 2, 3]);
@@ -98,7 +98,7 @@ where
         // use the RLE<Vec<u8>> adapter to simplify this
         RLE::<Vec<u8>, S>::get_be(bytes)
             .and_then(|bytes| String::from_utf8(bytes.unwrap()).map_err(|e| Error::Other(e.into())))
-            .map(|s| Self::new(s))
+            .map(Self::new)
     }
 
     fn put_be(&self, buffer: &mut dyn BufMut) -> Result<()> {

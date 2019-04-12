@@ -50,11 +50,9 @@ impl Mappings {
         })
     }
 
-    /// Get the number of pairs present in these mappings. This may be used
-    /// in conjunction with `PacketType::NUM_TYPES` to check whether all
-    /// packet types are properly mapped.
-    pub fn len(&self) -> usize {
-        self.mappings.len()
+    /// Get a reference to the internal map used by this instance
+    pub fn get_map(&self) -> &BiHashMap<u8, PacketType> {
+        &self.mappings
     }
 
     /// Get an iterator over the `PacketType` variants that are missing from
@@ -64,11 +62,6 @@ impl Mappings {
             .iter()
             .cloned()
             .filter(move |t| !self.mappings.contains_right(t))
-    }
-
-    /// Get a reference to the internal map used by this instance
-    pub fn get_map(&self) -> &BiHashMap<u8, PacketType> {
-        &self.mappings
     }
 
     /// Attempt to convert the given ROTMG packet ID to an internal type. `None`

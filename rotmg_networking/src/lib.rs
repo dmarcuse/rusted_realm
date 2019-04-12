@@ -3,7 +3,7 @@
 #![deny(missing_docs)]
 #![deny(bare_trait_objects)]
 
-pub mod adapters;
+pub mod adapter;
 pub mod connection;
 pub mod mappings;
 pub mod packets;

@@ -3,7 +3,7 @@
 #![allow(missing_docs)]
 
 use super::stat::StatData;
-use crate::adapters::{Adapter, Result, RLE};
+use crate::adapter::{Adapter, Result, RLE};
 use bytes::{Buf, BufMut};
 use serde::{Deserialize, Serialize};
 

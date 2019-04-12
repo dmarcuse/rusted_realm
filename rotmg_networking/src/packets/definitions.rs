@@ -394,7 +394,7 @@ macro_rules! define_packets {
 }
 
 mod unified_definitions {
-    use crate::adapters::{Adapter, Error, Result, RLE};
+    use crate::adapter::{Adapter, Error, Result, RLE};
     use crate::packets::packet_data::*;
     use bytes::{Buf, BufMut};
     use lazy_static::lazy_static;
