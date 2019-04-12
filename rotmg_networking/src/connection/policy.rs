@@ -17,8 +17,7 @@ pub const POLICY_REQUEST: &[u8] = b"<policy-file-request/>\0";
 /// The default policy file, allowing effectively unrestricted access
 ///
 /// This policy file allows connections from all hosts to all ports, and allows
-/// policy files from other ports as well. This should prevent any issues with
-/// connections, but a stricter one should be used if possible.
+/// policy files from other ports as well.
 pub const POLICY_FILE: &[u8] = br#"
 <?xml version="1.0"?>
 <!DOCTYPE cross-domain-policy SYSTEM "/xml/dtds/cross-domain-policy.dtd">
@@ -30,10 +29,6 @@ pub const POLICY_FILE: &[u8] = br#"
 
 /// Peek into the given `TcpStream` to detect whether this is a policy file
 /// request and handle appropriately.
-///
-/// The given `policy_file` should be the raw bytes of the XML flash policy
-/// file. The provided constant `DEFAULT_POLICY_FILE` can be used as a
-/// permissive default.
 ///
 /// `None` will be returned when a policy file request is detected and handled.
 /// `Some(TcpStream)` will be returned when a regular connection is detected;
