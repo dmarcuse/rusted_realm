@@ -1,0 +1,15 @@
+[package]
+name = "rotmg_extractor"
+version = "0.1.0"
+authors = ["Dominic Marcuse <dominic@marcuse.us>"]
+edition = "2018"
+
+[dependencies]
+rotmg_networking = { path = "../rotmg_networking" }
+tempfile = "3.0.7"
+tar = "0.4.22"
+libflate = "0.1.21"
+log = "0.4.6"
+
+[dev-dependencies]
+simple_logger = "1.0.1"

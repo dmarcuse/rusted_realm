@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "rotmg_networking",
+    "rotmg_extractor",
     "rusted_realm",
 ]
