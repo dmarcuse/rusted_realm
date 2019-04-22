@@ -10,6 +10,8 @@ tempfile = "3.0.7"
 tar = "0.4.22"
 libflate = "0.1.21"
 log = "0.4.6"
+failure = "0.1.5"
+failure_derive = "0.1.5"
 
 [dev-dependencies]
 simple_logger = "1.0.1"
