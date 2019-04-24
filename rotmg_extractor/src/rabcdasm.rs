@@ -18,12 +18,15 @@ const RABCDASM: &[u8] = include_bytes!("rabcdasm_linux.tar.gz");
 #[cfg(target_os = "windows")]
 const RABCDASM: &[u8] = include_bytes!("rabcdasm_windows.tar.gz");
 
-/// Extracted rabcdasm binaries
+/// Extracted rabcdasm binaries with methods to run them. When using any of the
+/// methods to run a binary, care should be taken as existing files alongside
+/// the input may interfere with the output.
 #[derive(Debug)]
 pub struct RabcdasmBinaries {
     dir: TempDir,
     abcexport: PathBuf,
     rabcdasm: PathBuf,
+    swfbinexport: PathBuf,
 }
 
 /// An error running one of the rabcdasm binaries
@@ -79,6 +82,7 @@ impl RabcdasmBinaries {
         // resolve the paths for each binary
         let abcexport = dir.path().join("abcexport");
         let rabcdasm = dir.path().join("rabcdasm");
+        let swfbinexport = dir.path().join("swfbinexport");
 
         let elapsed = start.elapsed();
         info!("Unpacked rabcdasm binaries in {}ms", elapsed.as_millis());
@@ -87,6 +91,7 @@ impl RabcdasmBinaries {
             dir,
             abcexport,
             rabcdasm,
+            swfbinexport,
         })
     }
 
@@ -138,6 +143,33 @@ impl RabcdasmBinaries {
             );
 
             Ok(asm)
+        }
+    }
+
+    /// Run swfbinexport on the given swf, returning the list of paths to
+    /// binary data embedded in the swf
+    pub fn swfbinexport(&self, swf: &Path) -> Fallible<Vec<PathBuf>> {
+        assert!(swf.is_file(), "swfbinexport must be run on a file");
+
+        info!("Running swfbinexport on {}", swf.display());
+        let output = Command::new(&self.swfbinexport).arg(swf).output()?;
+
+        if !output.status.success() {
+            // handle unsuccessful execution
+            Err(RabcdasmError::new("swfbinexport", output).into())
+        } else {
+            let mut binaries = vec![];
+
+            for entry in swf.parent().unwrap().read_dir()? {
+                let entry = entry?;
+                let path = entry.path();
+
+                if entry.file_type()?.is_file() && path.extension() == Some(".bin".as_ref()) {
+                    binaries.push(path);
+                }
+            }
+
+            Ok(binaries)
         }
     }
 }
