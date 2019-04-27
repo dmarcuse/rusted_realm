@@ -110,3 +110,23 @@ pub fn extract_mappings(mut from: impl Read) -> Fallible<Mappings> {
 
     Ok(Mappings::new(packets, &rc4)?)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Cursor;
+
+    const CLIENT: &[u8] = include_bytes!("../tests/AssembleeGameClient1556108352.swf");
+
+    #[test]
+    fn test_extract_mappings() -> Fallible<()> {
+        simple_logger::init()?;
+
+        let mappings = extract_mappings(Cursor::new(CLIENT))?;
+        let unmapped = mappings.find_unmapped().collect::<Vec<_>>();
+
+        assert_eq!(unmapped, vec![], "Some packets were left unmapped!");
+
+        Ok(())
+    }
+}

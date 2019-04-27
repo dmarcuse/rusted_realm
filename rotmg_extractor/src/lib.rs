@@ -3,7 +3,7 @@
 #![deny(missing_docs)]
 #![deny(bare_trait_objects)]
 
-pub mod mapping_extractor;
 pub mod rabcdasm;
 
-pub use mapping_extractor::extract_mappings;
+#[cfg(feature = "mappings")]
+pub mod mappings;
