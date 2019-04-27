@@ -6,7 +6,7 @@
 //!
 //! Submodules of this module expose the code which is used to implement these
 //! utility functions, in case you want to do something even more low-level or
-//! customize the behavior.  
+//! customize the behavior.
 
 pub mod codec;
 pub mod policy;

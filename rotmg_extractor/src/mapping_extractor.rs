@@ -10,7 +10,7 @@ use regex::Regex;
 use rotmg_networking::mappings::Mappings;
 use rotmg_networking::packets::PacketType;
 use std::collections::HashMap;
-use std::fs::{read_to_string, write, File};
+use std::fs::{read_to_string, File};
 use std::io::{copy, Read};
 use std::path::Path;
 use std::str::FromStr;
@@ -85,7 +85,6 @@ pub fn extract_mappings(mut from: impl Read) -> Fallible<Mappings> {
 
     // create a temporary directory
     let dir = tempdir()?;
-    let swf = dir.path().join("client.swf");
 
     // copy the swf contents
     let swf = dir.path().join("client.swf");
