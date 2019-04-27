@@ -1,11 +1,6 @@
 use failure::Fallible;
-use log::info;
 use rotmg_extractor::extract_mappings;
-use rotmg_extractor::rabcdasm::RabcdasmBinaries;
-use std::fs::File;
-use std::io::{copy, Cursor};
-use std::path::Path;
-use tempfile::{tempdir, tempfile};
+use std::io::Cursor;
 
 const CLIENT: &[u8] = include_bytes!("AssembleeGameClient1556108352.swf");
 
