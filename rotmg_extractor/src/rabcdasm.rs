@@ -73,10 +73,26 @@ impl RabcdasmBinaries {
             info!("Unpacking {} to {}", path.display(), destination.display());
 
             // open destination file
-            let mut file = File::create(destination)?;
+            let mut file = File::create(&destination)?;
 
             // copy contents
             copy(&mut entry, &mut file)?;
+
+            // on unix we need to make the file executable
+            #[cfg(unix)]
+            {
+                use std::fs::{metadata, set_permissions};
+                use std::os::unix::fs::PermissionsExt;
+
+                // get current file permissions
+                let mut perms = metadata(&destination)?.permissions();
+
+                // update permissions to allow user to execute
+                perms.set_mode(perms.mode() | 0o100);
+
+                // apply permissions
+                set_permissions(&destination, perms)?;
+            }
         }
 
         // resolve the paths for each binary
@@ -134,7 +150,7 @@ impl RabcdasmBinaries {
             Err(RabcdasmError::new("rabcdasm", output).into())
         } else {
             // construct path of output
-            let asm = abc.with_file_name(abc.file_name().unwrap());
+            let asm = abc.with_file_name(abc.file_stem().unwrap());
 
             // verify that output is present
             assert!(
@@ -164,6 +180,7 @@ impl RabcdasmBinaries {
                 let entry = entry?;
                 let path = entry.path();
 
+                // TODO: use better filtering here, checking the filename prefix?
                 if entry.file_type()?.is_file() && path.extension() == Some(".bin".as_ref()) {
                     binaries.push(path);
                 }
