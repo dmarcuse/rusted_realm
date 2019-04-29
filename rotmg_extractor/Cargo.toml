@@ -12,6 +12,8 @@ libflate = "0.1"
 log = "0.4"
 failure = "0.1"
 failure_derive = "0.1"
+swf-tree = "0.6"
+swf-parser = "0.5"
 
 # for extracting mappings
 rotmg_networking = { path = "../rotmg_networking", optional = true }
