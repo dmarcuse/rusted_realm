@@ -238,8 +238,8 @@ macro_rules! define_packets {
         type PacketDeserializer = fn(&mut dyn Buf) -> Result<Packet>;
         type PacketSerializer = fn(&Packet, &mut dyn BufMut) -> Result<()>;
         impl PacketType {
-            const VALID_TYPES: [Option<PacketType>; 255] = {
-                let mut arr = [None; 255];
+            const VALID_TYPES: [Option<PacketType>; 256] = {
+                let mut arr = [None; 256];
 
                 $(
                     $(
@@ -262,7 +262,7 @@ macro_rules! define_packets {
             pub fn get_all_types() -> &'static HashSet<PacketType> {
                 lazy_static! {
                     static ref ALL_TYPES: HashSet<PacketType> = {
-                        let mut set = HashSet::with_capacity(255);
+                        let mut set = HashSet::with_capacity(256);
 
                         $(
                             $(
@@ -292,8 +292,8 @@ macro_rules! define_packets {
                 count
             };
 
-            const DESERIALIZERS: [Option<PacketDeserializer>; 255] = {
-                let mut arr: [Option<PacketDeserializer>; 255] = [None; 255];
+            const DESERIALIZERS: [Option<PacketDeserializer>; 256] = {
+                let mut arr: [Option<PacketDeserializer>; 256] = [None; 256];
 
                 $(
                     $(
@@ -310,8 +310,8 @@ macro_rules! define_packets {
                 Self::DESERIALIZERS[self as usize].unwrap()
             }
 
-            const SERIALIZERS: [Option<PacketSerializer>; 255] = {
-                let mut arr: [Option<PacketSerializer>; 255] = [None; 255];
+            const SERIALIZERS: [Option<PacketSerializer>; 256] = {
+                let mut arr: [Option<PacketSerializer>; 256] = [None; 256];
 
                 $(
                     $(
@@ -334,7 +334,7 @@ macro_rules! define_packets {
             pub fn get_name_mappings() -> &'static HashMap<PacketType, &'static str> {
                 lazy_static! {
                     static ref NAMES: HashMap<PacketType, &'static str> = {
-                        let mut map = HashMap::with_capacity(255);
+                        let mut map = HashMap::with_capacity(256);
 
                         $(
                             $(
@@ -355,8 +355,8 @@ macro_rules! define_packets {
                 Self::get_name_mappings()[&self]
             }
 
-            const SERVERSIDE: [bool; 255] = {
-                let mut arr = [false; 255];
+            const SERVERSIDE: [bool; 256] = {
+                let mut arr = [false; 256];
 
                 $(
                     $(

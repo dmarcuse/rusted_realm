@@ -3,6 +3,9 @@
 use bytes::Buf;
 use failure_derive::Fail;
 
+#[macro_use]
+pub mod macros;
+
 pub mod abcfile;
 pub mod constants;
 pub mod primitives;

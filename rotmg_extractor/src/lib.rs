@@ -3,7 +3,7 @@
 #![deny(missing_docs)]
 #![deny(bare_trait_objects)]
 
-mod avm2;
+pub(crate) mod avm2;
 
 use failure::Fallible;
 use failure_derive::Fail;
