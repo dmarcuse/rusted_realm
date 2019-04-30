@@ -1,4 +1,4 @@
-use crate::avm2::parsers::{Parse, ParseError};
+use super::{Parse, ParseError};
 use bytes::Buf;
 use std::fmt::{Debug, Formatter, Result as FmtResult};
 use std::iter::{once, repeat_with};

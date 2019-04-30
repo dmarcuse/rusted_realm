@@ -1,29 +1,8 @@
 //! Parsers for basic AVM2 types
 
+use crate::avm2::{Parse, ParseError};
 use bytes::Buf;
-use failure_derive::Fail;
 use std::mem::size_of;
-
-/// An error parsing an AVM2 type
-#[derive(Debug, Fail)]
-pub enum ParseError {
-    /// Not enough bytes remained in the buffer to deserialize this type
-    #[fail(
-        display = "Not enough bytes remaining in buffer: need {} bytes, {} bytes remaining",
-        needed, remaining
-    )]
-    InsufficientBytes { remaining: usize, needed: usize },
-
-    /// A different error occurred
-    #[fail(display = "Unexpected error: {}", _0)]
-    Other(failure::Error),
-}
-
-/// A trait defining functionality for parsing an AVM2 type
-pub trait Parse: Sized {
-    /// Parse this type from the provided bytes
-    fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError>;
-}
 
 impl Parse for u8 {
     fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError> {
@@ -64,6 +43,9 @@ impl Parse for f64 {
     }
 }
 
+// this parser is used by the u32, s32, and u30 AVM2 primitives, all of which
+// are variable-length integers consisting of sequences of one to five bytes of
+// data
 impl Parse for u32 {
     fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError> {
         // so this mess is why flash died, huh

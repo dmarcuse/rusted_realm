@@ -1,5 +1,5 @@
 use super::constants::ConstantPool;
-use crate::avm2::parsers::{Parse, ParseError};
+use crate::avm2::{Parse, ParseError};
 use bytes::Buf;
 
 #[derive(Debug, Clone)]
