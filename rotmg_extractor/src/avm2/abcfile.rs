@@ -1,4 +1,4 @@
-use super::cpool::ConstantPool;
+use super::constants::ConstantPool;
 use crate::avm2::parsers::{Parse, ParseError};
 use bytes::Buf;
 
