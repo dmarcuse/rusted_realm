@@ -1,7 +1,7 @@
 use super::{Parse, ParseError};
 use bytes::Buf;
 use std::fmt::{Debug, Formatter, Result as FmtResult};
-use std::iter::{once, repeat_with};
+use std::iter::repeat_with;
 
 /// An AVM2 constant pool
 #[derive(Clone)]
@@ -12,35 +12,11 @@ pub struct ConstantPool {
     strings: Vec<String>,
     namespaces: Vec<Namespace>,
     ns_sets: Vec<NamespaceSet>,
-    // TODO: namespaces, namespacesets, multinames?
+    multinames: Vec<Multiname>,
 }
 
 #[allow(dead_code)]
-impl ConstantPool {
-    pub fn ints(&self) -> &[i32] {
-        &self.ints
-    }
-
-    pub fn uints(&self) -> &[u32] {
-        &self.uints
-    }
-
-    pub fn doubles(&self) -> &[f64] {
-        &self.doubles
-    }
-
-    pub fn strings(&self) -> &[String] {
-        &self.strings
-    }
-
-    pub fn namespaces(&self) -> &[Namespace] {
-        &self.namespaces
-    }
-
-    pub fn ns_sets(&self) -> &[NamespaceSet] {
-        &self.ns_sets
-    }
-}
+impl ConstantPool {}
 
 impl Debug for ConstantPool {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
@@ -54,6 +30,10 @@ impl Debug for ConstantPool {
                 &self.namespaces,
             )
             .field(&format!("ns_sets[{}]", self.ns_sets.len()), &self.ns_sets)
+            .field(
+                &format!("multinames[{}", self.multinames.len()),
+                &self.multinames,
+            )
             .finish()
     }
 }
@@ -61,33 +41,38 @@ impl Debug for ConstantPool {
 impl Parse for ConstantPool {
     fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError> {
         let num_ints = u32::parse_avm2(input)?.saturating_sub(1) as usize;
-        let ints = once(Ok(0))
-            .chain(repeat_with(|| i32::parse_avm2(input)).take(num_ints))
+        let ints = repeat_with(|| i32::parse_avm2(input))
+            .take(num_ints)
             .collect::<Result<_, _>>()?;
 
         let num_uints = u32::parse_avm2(input)?.saturating_sub(1) as usize;
-        let uints = once(Ok(0))
-            .chain(repeat_with(|| u32::parse_avm2(input)).take(num_uints))
+        let uints = repeat_with(|| u32::parse_avm2(input))
+            .take(num_uints)
             .collect::<Result<_, _>>()?;
 
         let num_doubles = u32::parse_avm2(input)?.saturating_sub(1) as usize;
-        let doubles = once(Ok(0.0))
-            .chain(repeat_with(|| f64::parse_avm2(input)).take(num_doubles))
+        let doubles = repeat_with(|| f64::parse_avm2(input))
+            .take(num_doubles)
             .collect::<Result<_, _>>()?;
 
         let num_strings = u32::parse_avm2(input)?.saturating_sub(1) as usize;
-        let strings = once(Ok(String::new()))
-            .chain(repeat_with(|| String::parse_avm2(input)).take(num_strings))
+        let strings = repeat_with(|| String::parse_avm2(input))
+            .take(num_strings)
             .collect::<Result<_, _>>()?;
 
         let num_namespaces = u32::parse_avm2(input)?.saturating_sub(1) as usize;
-        let namespaces = once(Ok(Namespace::default()))
-            .chain(repeat_with(|| Namespace::parse_avm2(input)).take(num_namespaces))
+        let namespaces = repeat_with(|| Namespace::parse_avm2(input))
+            .take(num_namespaces)
             .collect::<Result<_, _>>()?;
 
         let num_nssets = u32::parse_avm2(input)?.saturating_sub(1) as usize;
-        let ns_sets = once(Ok(NamespaceSet::default()))
-            .chain(repeat_with(|| NamespaceSet::parse_avm2(input)).take(num_nssets))
+        let ns_sets = repeat_with(|| NamespaceSet::parse_avm2(input))
+            .take(num_nssets)
+            .collect::<Result<_, _>>()?;
+
+        let num_multinames = u32::parse_avm2(input)?.saturating_sub(1) as usize;
+        let multinames = repeat_with(|| Multiname::parse_avm2(input))
+            .take(num_multinames)
             .collect::<Result<_, _>>()?;
 
         Ok(Self {
@@ -97,6 +82,7 @@ impl Parse for ConstantPool {
             strings,
             namespaces,
             ns_sets,
+            multinames,
         })
     }
 }
@@ -113,22 +99,22 @@ flag_enum! {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Namespace {
-    kind: u8,
+    kind: NamespaceKind,
     name_index: u32,
 }
 
 impl Parse for Namespace {
     fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError> {
-        let kind = u8::parse_avm2(input)?;
+        let kind = NamespaceKind::parse_avm2(input)?;
         let name_index = u32::parse_avm2(input)?;
 
         Ok(Self { kind, name_index })
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct NamespaceSet {
     namespace_indices: Vec<u32>,
 }
@@ -141,5 +127,104 @@ impl Parse for NamespaceSet {
             .collect::<Result<_, _>>()?;
 
         Ok(Self { namespace_indices })
+    }
+}
+
+flag_enum! {
+    MultinameKind {
+        QName = 0x07,
+        QNameA = 0x0d,
+        RTQName = 0x0f,
+        RTQNameA = 0x10,
+        RTQNameL = 0x11,
+        RTQNameLA = 0x12,
+        Multiname = 0x09,
+        MultinameA = 0x0e,
+        MultinameL = 0x1b,
+        MultinameLA = 0x1c,
+        Typename = 0x1d, // undocumented!
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Multiname {
+    QName {
+        kind: MultinameKind,
+        ns_idx: u32,
+        name_idx: u32,
+    },
+    RTQName {
+        kind: MultinameKind,
+        name_idx: u32,
+    },
+    RTQNameL {
+        kind: MultinameKind,
+    },
+    Multiname {
+        kind: MultinameKind,
+        name_idx: u32,
+        ns_set_idx: u32,
+    },
+    MultinameL {
+        kind: MultinameKind,
+        ns_set_idx: u32,
+    },
+    Typename {
+        kind: MultinameKind,
+        qname_index: u32,
+        param_indices: Vec<u32>,
+    },
+}
+
+impl Parse for Multiname {
+    fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError> {
+        let kind = MultinameKind::parse_avm2(input)?;
+        let multiname = match kind {
+            MultinameKind::QName | MultinameKind::QNameA => {
+                let ns_idx = u32::parse_avm2(input)?;
+                let name_idx = u32::parse_avm2(input)?;
+
+                Multiname::QName {
+                    kind,
+                    ns_idx,
+                    name_idx,
+                }
+            }
+            MultinameKind::RTQName | MultinameKind::RTQNameA => {
+                let name_idx = u32::parse_avm2(input)?;
+
+                Multiname::RTQName { kind, name_idx }
+            }
+            MultinameKind::RTQNameL | MultinameKind::RTQNameLA => Multiname::RTQNameL { kind },
+            MultinameKind::Multiname | MultinameKind::MultinameA => {
+                let name_idx = u32::parse_avm2(input)?;
+                let ns_set_idx = u32::parse_avm2(input)?;
+
+                Multiname::Multiname {
+                    kind,
+                    name_idx,
+                    ns_set_idx,
+                }
+            }
+            MultinameKind::MultinameL | MultinameKind::MultinameLA => {
+                let ns_set_idx = u32::parse_avm2(input)?;
+                Multiname::MultinameL { kind, ns_set_idx }
+            }
+            MultinameKind::Typename => {
+                let qname_index = u32::parse_avm2(input)?;
+                let num_params = u32::parse_avm2(input)? as usize;
+                let param_indices = repeat_with(|| u32::parse_avm2(input))
+                    .take(num_params)
+                    .collect::<Result<_, _>>()?;
+
+                Multiname::Typename {
+                    kind,
+                    qname_index,
+                    param_indices,
+                }
+            }
+        };
+
+        Ok(multiname)
     }
 }
