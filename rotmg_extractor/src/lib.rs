@@ -3,7 +3,8 @@
 #![deny(missing_docs)]
 #![deny(bare_trait_objects)]
 
-use bimap::BiHashMap;
+mod avm2;
+
 use failure::Fallible;
 use failure_derive::Fail;
 use lazy_static::lazy_static;
