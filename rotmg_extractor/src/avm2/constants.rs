@@ -16,7 +16,63 @@ pub struct ConstantPool {
 }
 
 #[allow(dead_code)]
-impl ConstantPool {}
+impl ConstantPool {
+    pub fn int(&self, i: usize) -> i32 {
+        self.ints[i - 1]
+    }
+
+    pub fn all_ints(&self) -> &[i32] {
+        &self.ints
+    }
+
+    pub fn uint(&self, i: usize) -> u32 {
+        self.uints[i - 1]
+    }
+
+    pub fn all_uints(&self) -> &[u32] {
+        &self.uints
+    }
+
+    pub fn double(&self, i: usize) -> f64 {
+        self.doubles[i - 1]
+    }
+
+    pub fn all_doubles(&self) -> &[f64] {
+        &self.doubles
+    }
+
+    pub fn string(&self, i: usize) -> &str {
+        &self.strings[i - 1]
+    }
+
+    pub fn all_strings(&self) -> &[String] {
+        &self.strings
+    }
+
+    pub fn namespace(&self, i: usize) -> &Namespace {
+        &self.namespaces[i - 1]
+    }
+
+    pub fn all_namespaces(&self) -> &[Namespace] {
+        &self.namespaces
+    }
+
+    pub fn ns_set(&self, i: usize) -> &NamespaceSet {
+        &self.ns_sets[i - 1]
+    }
+
+    pub fn ns_sets(&self) -> &[NamespaceSet] {
+        &self.ns_sets
+    }
+
+    pub fn multiname(&self, i: usize) -> &Multiname {
+        &self.multinames[i - 1]
+    }
+
+    pub fn multinames(&self) -> &[Multiname] {
+        &self.multinames
+    }
+}
 
 impl Debug for ConstantPool {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {

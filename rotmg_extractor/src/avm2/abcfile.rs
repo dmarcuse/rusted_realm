@@ -28,6 +28,7 @@ mod tests {
     use super::*;
     use failure::Fallible;
     use std::io::Cursor;
+    use std::time::Instant;
     use swf_parser::parsers::movie::parse_movie;
     use swf_tree::Tag;
 
@@ -35,6 +36,7 @@ mod tests {
 
     #[test]
     fn test_parse_constants() -> Fallible<()> {
+        let start = Instant::now();
         let (_, movie) = parse_movie(CLIENT)?;
         let abc = movie
             .tags
@@ -48,7 +50,7 @@ mod tests {
 
         let mut buf = Cursor::new(&abc.data);
         let abc = AbcFile::parse_avm2(&mut buf)?;
-        println!("Success! Ints ({:#?})", abc);
+        println!("Parsed in {} ms", start.elapsed().as_millis());
 
         Ok(())
     }
