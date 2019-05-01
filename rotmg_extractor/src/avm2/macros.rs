@@ -56,7 +56,7 @@ macro_rules! flag_enum {
                 use failure_derive::Fail;
 
                 #[derive(Debug, Fail)]
-                #[fail(display = "Flag value {} (0x${:x}) is invalid for type {}", _0, _0, _1)]
+                #[fail(display = "Flag value {} ({:#x}) is invalid for type {}", _0, _0, _1)]
                 struct InvalidFlag(u8, &'static str);
 
                 if buf.remaining() >= 1 {

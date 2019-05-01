@@ -1,10 +1,11 @@
 use super::{Parse, ParseError};
 use bytes::Buf;
+use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Formatter, Result as FmtResult};
 use std::iter::repeat_with;
 
 /// An AVM2 constant pool
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct ConstantPool {
     ints: Vec<i32>,
     uints: Vec<u32>,
@@ -155,7 +156,7 @@ flag_enum! {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Namespace {
     kind: NamespaceKind,
     name_index: u32,
@@ -170,7 +171,7 @@ impl Parse for Namespace {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NamespaceSet {
     namespace_indices: Vec<u32>,
 }
@@ -202,7 +203,7 @@ flag_enum! {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Multiname {
     QName {
         kind: MultinameKind,

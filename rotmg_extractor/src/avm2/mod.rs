@@ -8,6 +8,7 @@ pub mod macros;
 
 pub mod abcfile;
 pub mod constants;
+pub mod methods;
 pub mod primitives;
 pub mod s24;
 

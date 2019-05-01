@@ -1,12 +1,16 @@
 use super::constants::ConstantPool;
+use crate::avm2::methods::MethodInfo;
 use crate::avm2::{Parse, ParseError};
 use bytes::Buf;
+use serde::{Deserialize, Serialize};
+use std::iter::repeat_with;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AbcFile {
     minor_version: u16,
     major_version: u16,
     constants: ConstantPool,
+    methods: Vec<MethodInfo>,
 }
 
 impl Parse for AbcFile {
@@ -15,10 +19,16 @@ impl Parse for AbcFile {
         let major_version = u16::parse_avm2(input)?;
         let constants = ConstantPool::parse_avm2(input)?;
 
+        let num_methods = u32::parse_avm2(input)? as usize;
+        let methods = repeat_with(|| MethodInfo::parse_avm2(input))
+            .take(num_methods)
+            .collect::<Result<_, _>>()?;
+
         Ok(Self {
             minor_version,
             major_version,
             constants,
+            methods,
         })
     }
 }
