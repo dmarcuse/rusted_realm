@@ -1,4 +1,5 @@
 use super::constants::ConstantPool;
+use crate::avm2::metadata::Metadata;
 use crate::avm2::methods::MethodInfo;
 use crate::avm2::{Parse, ParseError};
 use bytes::Buf;
@@ -11,6 +12,7 @@ pub struct AbcFile {
     major_version: u16,
     constants: ConstantPool,
     methods: Vec<MethodInfo>,
+    metadata: Vec<Metadata>,
 }
 
 impl Parse for AbcFile {
@@ -24,11 +26,17 @@ impl Parse for AbcFile {
             .take(num_methods)
             .collect::<Result<_, _>>()?;
 
+        let num_metadata = u32::parse_avm2(input)? as usize;
+        let metadata = repeat_with(|| Metadata::parse_avm2(input))
+            .take(num_metadata)
+            .collect::<Result<_, _>>()?;
+
         Ok(Self {
             minor_version,
             major_version,
             constants,
             methods,
+            metadata,
         })
     }
 }
@@ -61,6 +69,7 @@ mod tests {
         let mut buf = Cursor::new(&abc.data);
         let abc = AbcFile::parse_avm2(&mut buf)?;
         println!("Parsed in {} ms", start.elapsed().as_millis());
+        println!("Metadata: {:#?}", abc.metadata);
 
         Ok(())
     }
