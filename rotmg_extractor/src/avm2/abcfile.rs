@@ -69,7 +69,6 @@ mod tests {
         let mut buf = Cursor::new(&abc.data);
         let abc = AbcFile::parse_avm2(&mut buf)?;
         println!("Parsed in {} ms", start.elapsed().as_millis());
-        println!("Metadata: {:#?}", abc.metadata);
 
         Ok(())
     }

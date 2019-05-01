@@ -7,11 +7,13 @@ use failure_derive::Fail;
 pub mod macros;
 
 pub mod abcfile;
+pub mod class;
 pub mod constants;
 pub mod metadata;
 pub mod methods;
 pub mod primitives;
 pub mod s24;
+pub mod traits;
 
 /// An error parsing an AVM2 type
 #[derive(Debug, Fail)]
