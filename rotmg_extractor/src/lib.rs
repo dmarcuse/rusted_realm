@@ -5,11 +5,14 @@
 
 pub(crate) mod avm2;
 
+use avm2::abcfile::AbcFile;
+use avm2::Parse;
 use failure::Fallible;
 use failure_derive::Fail;
 use lazy_static::lazy_static;
 use regex::bytes::{Regex, RegexBuilder};
 use rotmg_networking::mappings::RC4_LEN;
+use std::io::Cursor;
 use std::str::from_utf8;
 use swf_parser::parsers::movie::parse_movie;
 use swf_tree::tags::DoAbc;
@@ -32,52 +35,37 @@ pub enum ExtractionError {
 /// called.
 pub struct ParsedClient {
     parsed: Movie,
-}
-
-lazy_static! {
-    static ref RC4_PATTERN: Regex =
-        RegexBuilder::new(&format!(r"rc4.([a-fA-F0-9]{{{}}})", RC4_LEN * 2))
-            .dot_matches_new_line(true)
-            .build()
-            .unwrap();
+    abc: AbcFile,
 }
 
 impl ParsedClient {
-    /// Parse the given client and store the results in a `ClientExtractor` for
-    /// further processing
+    /// Parse the given game client
     pub fn new(client: &'static [u8]) -> Fallible<Self> {
-        Ok(Self {
-            parsed: parse_movie(client).map(|(_extra, movie)| movie)?,
-        })
-    }
+        let (_, parsed) = parse_movie(client)?;
 
-    /// Get the first DoAbc tag from the client
-    fn abc(&self) -> Result<&DoAbc, ExtractionError> {
-        self.parsed
+        let abc_tag = parsed
             .tags
             .iter()
             .filter_map(|t| match t {
                 Tag::DoAbc(abc) => Some(abc),
                 _ => None,
             })
-            .nth(0) // TODO: error when more than one DoAbc tag is present?
-            .ok_or(ExtractionError::NoBytecodeFound)
+            .nth(0)
+            .ok_or(ExtractionError::NoBytecodeFound)?;
+
+        let abc = AbcFile::parse_avm2(&mut Cursor::new(&abc_tag.data))?;
+
+        Ok(Self { parsed, abc })
     }
 
-    /// Extract RC4 keys from this client, in hex form
-    pub fn extract_rc4(&self) -> Fallible<&str> {
-        // get the bytecode
-        let abc = self.abc()?;
-
-        // use regex to pick out the RC4 key
-        let hex_rc4: &[u8] = RC4_PATTERN
-            .captures(&abc.data[..])
-            .ok_or(ExtractionError::NoRC4Found)?
-            .get(1)
-            .unwrap()
-            .as_bytes();
-
-        // convert it to a UTF-8 string
-        from_utf8(hex_rc4).map_err(|e| e.into())
+    /// Extract RC4 key from this client, in hex form
+    pub fn extract_rc4(&self) -> Fallible<&String> {
+        self.abc
+            .constants()
+            .all_strings()
+            .iter()
+            .skip_while(|&s| s != "rc4")
+            .nth(1)
+            .ok_or(ExtractionError::NoRC4Found.into())
     }
 }

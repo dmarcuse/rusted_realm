@@ -1,1 +1,0 @@
-\s+getlex\s+QName\(PackageNamespace\("com\.hurlant\.crypto"\),\s+"Crypto"\)\s+pushstring\s+"rc4"\s+getlex\s+QName\(PackageNamespace\("com\.company\.util"\),\s+"MoreStringUtil"\)\s+pushstring\s+"(\w+)"\s+pushbyte\s+0\s+pushbyte\s+26

@@ -98,10 +98,6 @@ mod tests {
         let abc = AbcFile::parse_avm2(&mut buf)?;
         println!("Parsed in {} ms", start.elapsed().as_millis());
 
-        for class in abc.classes() {
-            println!("Class: {:?}", class);
-        }
-
         Ok(())
     }
 }
