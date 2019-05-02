@@ -139,20 +139,12 @@ impl Parse for Trait {
 
         let kind = u8::parse_avm2(input)?;
 
-        println!("Name idx: {} unparsed kind: {:x}", name_idx, kind);
-
         let attrs = kind >> 4;
         let kind = TraitKind::from_u8(kind & 0x0f)?;
 
-        println!(
-            "Parsing trait name_idx {} attrs {} kind {:?}",
-            name_idx, attrs, kind
-        );
-
         let get_metadata = |input: &mut dyn Buf| {
             if attrs & Self::ATTR_METADATA == Self::ATTR_METADATA {
-                let metadata_count = dbg!(u32::parse_avm2(input)? as usize);
-
+                let metadata_count = u32::parse_avm2(input)? as usize;
                 repeat_with(|| u32::parse_avm2(input))
                     .take(metadata_count)
                     .collect()

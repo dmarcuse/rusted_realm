@@ -1,4 +1,4 @@
-use crate::avm2::class::Class;
+use crate::avm2::class::{Class, Instance};
 use crate::avm2::constants::ConstantPool;
 use crate::avm2::metadata::Metadata;
 use crate::avm2::methods::MethodInfo;
@@ -14,6 +14,7 @@ pub struct AbcFile {
     constants: ConstantPool,
     methods: Vec<MethodInfo>,
     metadata: Vec<Metadata>,
+    instances: Vec<Instance>,
     classes: Vec<Class>,
 }
 
@@ -34,6 +35,11 @@ impl Parse for AbcFile {
             .collect::<Result<_, _>>()?;
 
         let num_classes = u32::parse_avm2(input)? as usize;
+
+        let instances = repeat_with(|| Instance::parse_avm2(input))
+            .take(num_classes)
+            .collect::<Result<_, _>>()?;
+
         let classes = repeat_with(|| Class::parse_avm2(input))
             .take(num_classes)
             .collect::<Result<_, _>>()?;
@@ -44,6 +50,7 @@ impl Parse for AbcFile {
             constants,
             methods,
             metadata,
+            instances,
             classes,
         })
     }
