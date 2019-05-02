@@ -1,5 +1,5 @@
 use super::class::{Class, Instance, LinkedClass};
-use super::constants::{ConstantPool, Multiname};
+use super::constants::ConstantPool;
 use super::metadata::Metadata;
 use super::methods::MethodInfo;
 use super::{Parse, ParseError};
@@ -95,7 +95,7 @@ mod tests {
             .unwrap();
 
         let mut buf = Cursor::new(&abc.data);
-        let abc = AbcFile::parse_avm2(&mut buf)?;
+        let _abc = AbcFile::parse_avm2(&mut buf)?;
         println!("Parsed in {} ms", start.elapsed().as_millis());
 
         Ok(())

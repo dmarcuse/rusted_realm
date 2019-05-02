@@ -206,7 +206,7 @@ flag_enum! {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Multiname {
     QName {
-        kind: MultinameKind,
+        _kind: MultinameKind,
         ns_idx: u32,
         name_idx: u32,
     },
@@ -237,7 +237,7 @@ impl Multiname {
     pub fn link_qname<'a>(&'a self, constants: &'a ConstantPool) -> (&'a str, &'a str) {
         match self {
             Multiname::QName {
-                kind,
+                _kind,
                 ns_idx,
                 name_idx,
             } => {
@@ -270,7 +270,7 @@ impl Parse for Multiname {
                 let name_idx = u32::parse_avm2(input)?;
 
                 Multiname::QName {
-                    kind,
+                    _kind: kind,
                     ns_idx,
                     name_idx,
                 }
