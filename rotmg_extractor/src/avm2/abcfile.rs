@@ -1,5 +1,5 @@
-use super::class::{Class, Instance};
-use super::constants::ConstantPool;
+use super::class::{Class, Instance, LinkedClass};
+use super::constants::{ConstantPool, Multiname};
 use super::metadata::Metadata;
 use super::methods::MethodInfo;
 use super::{Parse, ParseError};
@@ -16,6 +16,15 @@ pub struct AbcFile {
     metadata: Vec<Metadata>,
     instances: Vec<Instance>,
     classes: Vec<Class>,
+}
+
+impl AbcFile {
+    pub fn classes<'a>(&'a self) -> impl Iterator<Item = LinkedClass<'a>> {
+        self.instances
+            .iter()
+            .zip(self.classes.iter())
+            .map(move |(i, c)| i.link(c, &self.constants))
+    }
 }
 
 impl Parse for AbcFile {
@@ -84,6 +93,10 @@ mod tests {
         let mut buf = Cursor::new(&abc.data);
         let abc = AbcFile::parse_avm2(&mut buf)?;
         println!("Parsed in {} ms", start.elapsed().as_millis());
+
+        for class in abc.classes() {
+            println!("Class: {:?}", class);
+        }
 
         Ok(())
     }

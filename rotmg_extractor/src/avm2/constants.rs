@@ -233,6 +233,34 @@ pub enum Multiname {
     },
 }
 
+impl Multiname {
+    pub fn link_qname<'a>(&'a self, constants: &'a ConstantPool) -> (&'a str, &'a str) {
+        match self {
+            Multiname::QName {
+                kind,
+                ns_idx,
+                name_idx,
+            } => {
+                let ns = match *ns_idx {
+                    0 => "*",
+                    i => match constants.namespace(i as usize).name_index {
+                        0 => "",
+                        i => constants.string(i as usize),
+                    },
+                };
+
+                let name = match *name_idx {
+                    0 => "*",
+                    i => constants.string(i as usize),
+                };
+
+                (ns, name)
+            }
+            _ => panic!("Expected QName variant, got {:?}", self),
+        }
+    }
+}
+
 impl Parse for Multiname {
     fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError> {
         let kind = MultinameKind::parse_avm2(input)?;

@@ -2,6 +2,7 @@
 
 use super::traits::Trait;
 use super::{Parse, ParseError};
+use crate::avm2::constants::ConstantPool;
 use bytes::Buf;
 use serde::{Deserialize, Serialize};
 use std::iter::repeat_with;
@@ -40,11 +41,41 @@ pub struct Instance {
     traits: Vec<Trait>,
 }
 
+#[derive(Debug)]
+pub struct LinkedClass<'a> {
+    /// (namespace, name)
+    pub name: (&'a str, &'a str),
+
+    /// Option<(namespace, name)>
+    pub super_name: Option<(&'a str, &'a str)>,
+}
+
 impl Instance {
     pub const CLASS_SEALED: u8 = 0x01;
     pub const CLASS_FINAL: u8 = 0x02;
     pub const CLASS_INTERFACE: u8 = 0x04;
     pub const CLASS_PROTECTED_NS: u8 = 0x08;
+
+    pub fn link<'a>(&'a self, class: &'a Class, constants: &'a ConstantPool) -> LinkedClass<'a> {
+        let name = constants
+            .multiname(self.name_idx as usize)
+            .link_qname(constants);
+
+        if name.1.contains("Game") {
+            println!("Linking: {:?}", self);
+            println!(
+                "Multiname: {:?}",
+                constants.multiname(self.name_idx as usize)
+            )
+        }
+
+        let super_name = match self.super_name_idx {
+            0 => None,
+            i => Some(constants.multiname(i as usize).link_qname(constants)),
+        };
+
+        LinkedClass { name, super_name }
+    }
 }
 
 impl Parse for Instance {
