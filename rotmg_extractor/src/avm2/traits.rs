@@ -1,5 +1,6 @@
 //! Parsers for AVM2 traits
 
+use super::constants::ConstantPool;
 use super::{Parse, ParseError};
 use bytes::Buf;
 use serde::{Deserialize, Serialize};
@@ -185,5 +186,54 @@ impl Parse for Trait {
         };
 
         Ok(parsed)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum TraitSlotValue<'a> {
+    Int(i32),
+    Uint(u32),
+    Double(f64),
+    String(&'a str),
+    None,
+}
+
+#[derive(Debug, Clone)]
+pub struct LinkedTraitSlot<'a> {
+    pub name: (&'a str, &'a str),
+    pub slot_id: u32,
+    pub value: TraitSlotValue<'a>,
+}
+
+impl Trait {
+    pub fn is_slot(&self) -> bool {
+        match self {
+            Trait::Slot { .. } => true,
+            _ => false,
+        }
+    }
+
+    pub fn link_slot<'a>(&'a self, constants: &'a ConstantPool) -> LinkedTraitSlot<'a> {
+        match self {
+            Trait::Slot { name_idx, data, .. } => {
+                let name = constants
+                    .multiname((*name_idx) as usize)
+                    .link_qname(constants);
+
+                let value = match data.value_kind {
+                    Some(ConstantKind::Int) => {
+                        TraitSlotValue::Int(constants.int(data.value_idx as usize))
+                    }
+                    _ => TraitSlotValue::None, // TODO i guess?
+                };
+
+                LinkedTraitSlot {
+                    name,
+                    slot_id: data.slot_id,
+                    value,
+                }
+            }
+            _ => panic!("Expected Slot variant, got {:?}", self),
+        }
     }
 }

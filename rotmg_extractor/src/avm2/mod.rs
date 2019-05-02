@@ -1,5 +1,7 @@
 //! Basic parser for AVM2 bytecode
 
+#![allow(dead_code)]
+
 use bytes::Buf;
 use failure_derive::Fail;
 

@@ -25,6 +25,10 @@ impl AbcFile {
             .zip(self.classes.iter())
             .map(move |(i, c)| i.link(c, &self.constants))
     }
+
+    pub fn constants(&self) -> &ConstantPool {
+        &self.constants
+    }
 }
 
 impl Parse for AbcFile {

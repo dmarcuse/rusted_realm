@@ -3,6 +3,7 @@
 use super::traits::Trait;
 use super::{Parse, ParseError};
 use crate::avm2::constants::ConstantPool;
+use crate::avm2::traits::LinkedTraitSlot;
 use bytes::Buf;
 use serde::{Deserialize, Serialize};
 use std::iter::repeat_with;
@@ -48,6 +49,8 @@ pub struct LinkedClass<'a> {
 
     /// Option<(namespace, name)>
     pub super_name: Option<(&'a str, &'a str)>,
+
+    pub consts: Vec<LinkedTraitSlot<'a>>,
 }
 
 impl Instance {
@@ -61,20 +64,23 @@ impl Instance {
             .multiname(self.name_idx as usize)
             .link_qname(constants);
 
-        if name.1.contains("Game") {
-            println!("Linking: {:?}", self);
-            println!(
-                "Multiname: {:?}",
-                constants.multiname(self.name_idx as usize)
-            )
-        }
-
         let super_name = match self.super_name_idx {
             0 => None,
             i => Some(constants.multiname(i as usize).link_qname(constants)),
         };
 
-        LinkedClass { name, super_name }
+        let consts = class
+            .traits
+            .iter()
+            .filter(|t| t.is_slot())
+            .map(|t| t.link_slot(constants))
+            .collect();
+
+        LinkedClass {
+            name,
+            super_name,
+            consts,
+        }
     }
 }
 
