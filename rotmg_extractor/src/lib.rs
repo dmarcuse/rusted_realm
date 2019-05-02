@@ -32,6 +32,10 @@ pub enum ExtractionError {
     /// The GameServerConnection class could not be found
     #[fail(display = "Could not find packet IDs")]
     NoPacketsFound,
+
+    /// Error parsing the SWF
+    #[fail(display = "An internal parser error occurred: {}", _0)]
+    ParserError(String),
 }
 
 /// A struct representing a parsed game client which can then be used to extract
@@ -44,8 +48,9 @@ pub struct ParsedClient {
 
 impl ParsedClient {
     /// Parse the given game client
-    pub fn new(client: &'static [u8]) -> Fallible<Self> {
-        let (_, parsed) = parse_movie(client)?;
+    pub fn new(client: &[u8]) -> Fallible<Self> {
+        let (_, parsed) =
+            parse_movie(client).map_err(|e| ExtractionError::ParserError(e.to_string()))?;
 
         let abc_tag = parsed
             .tags
