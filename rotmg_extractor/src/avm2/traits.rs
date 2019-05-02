@@ -37,12 +37,32 @@ flag_enum! {
     }
 }
 
-data_struct! {
-    TraitSlot {
-        slot_id: u32,
-        type_name_idx: u32,
-        value_idx: u32,
-        value_kind: ConstantKind
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TraitSlot {
+    slot_id: u32,
+    type_name_idx: u32,
+    value_idx: u32,
+    value_kind: Option<ConstantKind>,
+}
+
+impl Parse for TraitSlot {
+    fn parse_avm2(input: &mut dyn Buf) -> Result<Self, ParseError> {
+        let slot_id = u32::parse_avm2(input)?;
+        let type_name_idx = u32::parse_avm2(input)?;
+        let value_idx = u32::parse_avm2(input)?;
+
+        let value_kind = if value_idx == 0 {
+            None
+        } else {
+            Some(ConstantKind::parse_avm2(input)?)
+        };
+
+        Ok(Self {
+            slot_id,
+            type_name_idx,
+            value_idx,
+            value_kind,
+        })
     }
 }
 
@@ -118,12 +138,20 @@ impl Parse for Trait {
         let name_idx = u32::parse_avm2(input)?;
 
         let kind = u8::parse_avm2(input)?;
+
+        println!("Name idx: {} unparsed kind: {:x}", name_idx, kind);
+
         let attrs = kind >> 4;
         let kind = TraitKind::from_u8(kind & 0x0f)?;
 
+        println!(
+            "Parsing trait name_idx {} attrs {} kind {:?}",
+            name_idx, attrs, kind
+        );
+
         let get_metadata = |input: &mut dyn Buf| {
             if attrs & Self::ATTR_METADATA == Self::ATTR_METADATA {
-                let metadata_count = u32::parse_avm2(input)? as usize;
+                let metadata_count = dbg!(u32::parse_avm2(input)? as usize);
 
                 repeat_with(|| u32::parse_avm2(input))
                     .take(metadata_count)
