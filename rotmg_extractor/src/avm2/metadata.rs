@@ -1,6 +1,6 @@
 //! Parser for AVM2 metadata
 
-use crate::avm2::{Parse, ParseError};
+use super::{Parse, ParseError};
 use bytes::Buf;
 use serde::{Deserialize, Serialize};
 use std::iter::repeat_with;

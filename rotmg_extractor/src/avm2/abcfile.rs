@@ -1,8 +1,8 @@
-use crate::avm2::class::{Class, Instance};
-use crate::avm2::constants::ConstantPool;
-use crate::avm2::metadata::Metadata;
-use crate::avm2::methods::MethodInfo;
-use crate::avm2::{Parse, ParseError};
+use super::class::{Class, Instance};
+use super::constants::ConstantPool;
+use super::metadata::Metadata;
+use super::methods::MethodInfo;
+use super::{Parse, ParseError};
 use bytes::Buf;
 use serde::{Deserialize, Serialize};
 use std::iter::repeat_with;
@@ -83,7 +83,6 @@ mod tests {
 
         let mut buf = Cursor::new(&abc.data);
         let abc = AbcFile::parse_avm2(&mut buf)?;
-        println!("Classes: {:#?}", abc.classes);
         println!("Parsed in {} ms", start.elapsed().as_millis());
 
         Ok(())

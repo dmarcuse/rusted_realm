@@ -12,7 +12,6 @@ pub mod constants;
 pub mod metadata;
 pub mod methods;
 pub mod primitives;
-pub mod s24;
 pub mod traits;
 
 /// An error parsing an AVM2 type

@@ -1,6 +1,6 @@
 //! Parsers for basic AVM2 types
 
-use crate::avm2::{Parse, ParseError};
+use super::{Parse, ParseError};
 use bytes::Buf;
 use std::mem::size_of;
 

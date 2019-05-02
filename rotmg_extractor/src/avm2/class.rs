@@ -1,7 +1,7 @@
 //! Parsers for AVM2 classes
 
-use crate::avm2::traits::Trait;
-use crate::avm2::{Parse, ParseError};
+use super::traits::Trait;
+use super::{Parse, ParseError};
 use bytes::Buf;
 use serde::{Deserialize, Serialize};
 use std::iter::repeat_with;
