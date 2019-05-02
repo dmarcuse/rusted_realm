@@ -18,6 +18,18 @@ rotmg_networking = { path = "../rotmg_networking" }
 bimap = "0.3"
 bytes = "0.4"
 serde = { version = "1.0", features = [ "derive" ] }
+serde_json = { version = "1.0", optional = true }
 
 [dev-dependencies]
 simple_logger = "1.0"
+
+[features]
+cli = [ "serde_json" ]
+
+[lib]
+doc = true
+
+[[bin]]
+name = "rotmg_extractor"
+doc = false
+required-features = [ "cli" ]

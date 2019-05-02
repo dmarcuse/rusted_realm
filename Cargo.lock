@@ -658,6 +658,7 @@ dependencies = [
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "rotmg_networking 0.1.0",
  "serde 1.0.90 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
  "simple_logger 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "swf-parser 0.5.2 (git+https://github.com/open-flash/swf-parser.git)",
  "swf-tree 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
