@@ -68,36 +68,3 @@ impl Parse for AbcFile {
         })
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use failure::Fallible;
-    use std::io::Cursor;
-    use std::time::Instant;
-    use swf_parser::parsers::movie::parse_movie;
-    use swf_tree::Tag;
-
-    const CLIENT: &[u8] = include_bytes!("../../tests/AssembleeGameClient1556108352.swf");
-
-    #[test]
-    fn test_parse_constants() -> Fallible<()> {
-        let start = Instant::now();
-        let (_, movie) = parse_movie(CLIENT)?;
-        let abc = movie
-            .tags
-            .iter()
-            .filter_map(|t| match t {
-                Tag::DoAbc(abc) => Some(abc),
-                _ => None,
-            })
-            .nth(0)
-            .unwrap();
-
-        let mut buf = Cursor::new(&abc.data);
-        let _abc = AbcFile::parse_avm2(&mut buf)?;
-        println!("Parsed in {} ms", start.elapsed().as_millis());
-
-        Ok(())
-    }
-}
