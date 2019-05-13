@@ -1,9 +1,6 @@
 language: rust
-
 rust: stable
-
 cache: cargo
-
 os:
   - linux
   - osx
@@ -17,3 +14,21 @@ script:
 
 notifications:
   email: false
+
+before_deploy:
+  - ci/deploy.sh
+
+deploy:
+  provider: releases
+
+  on:
+    repo: dmarcuse/rusted_realm
+    tags: true
+
+  api_key:
+    secure: iKqgpLi6AFCXIT7yl/qGAY6JPCA3sKHHnFoy+8lhdp9kRS8YM8P71j8pMixBZ8BHBksVGiWt5sKVhXNARZCJ/ocD92V6DH+Z1SlO5WCSzzXDTcUjSay5wn9XWJvtWfGJ8nVOdSqMWVMJTt1fgOr0Nv7FlzuNdrWFS6GANx1A6LcPTu+X7OCqp2Kua4YNMNN18DcoJ02CQ6DSYnjZGn5soZ2uvUZDLWfUsNkByDbwUalmv6gTg0I3fqUm2L3/JvwVTgvaHbg+Mh9We4lAbHEwwa9esM1ArhoRIXYTD7MYE8FatTwsoUw8JHFulByD+eWqFo8bRdZsjiRcy53ZTV7jaeDUn3+0SZTtTsA2ngvyjWHg6wPXAjODr1V2TAKj8eJKHoGcD1pSp+sj5WHLnRWPcviuYurAGBPkdLL5eTDXQq2p85EEEF2fiqcKDevuvlEPd70tFV+qkXL9Maa7gVz3WSF6Ht/gUxt8n2JNhBz9Q7ogtaGlSqen1jQWfmg++LJHYX02I9uRB1btVAG8rVoTfwN37myNIaxEYXY2InAz20JwsFjDFq3e6bQJr+PecSqcocUHHzYaIq/n2glKV3Jlo9ATSan0dg6WH2vjzzI3D/A0m8s4NLsi/YEydphYu5U/QUEZEPoKK0dRjIiI2Tgvl5DxqDxR40/rzE2X/sOnZHM=
+
+  file_glob: true
+  file: deploy/*
+  skip_cleanup: true
+  draft: true
