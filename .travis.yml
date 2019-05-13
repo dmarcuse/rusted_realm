@@ -10,7 +10,10 @@ os:
   - windows
 
 script:
+  - cargo test -- --nocapture
   - cargo test --all-features -- --nocapture
+  - cargo test --all-features --release -- --nocapture
+  - cargo build --release --all-features
 
 notifications:
   email: false

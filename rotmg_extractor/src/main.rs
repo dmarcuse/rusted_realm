@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-mod avm2;
-mod extractor;
+pub mod avm2;
+pub mod extractor;
 
 use failure::Fallible;
 use rotmg_extractor::ParsedClient;
