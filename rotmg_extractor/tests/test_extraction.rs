@@ -3,7 +3,7 @@ use log::info;
 use rotmg_extractor::ParsedClient;
 use std::time::Instant;
 
-const CLIENT: &[u8] = include_bytes!("AssembleeGameClient1556108352.swf");
+const CLIENT: &[u8] = include_bytes!("AssembleeGameClient1557733218.swf");
 
 #[test]
 fn test_extraction() -> Fallible<()> {
