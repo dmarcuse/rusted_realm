@@ -14,11 +14,7 @@ fn test_extraction() -> Fallible<()> {
     let parsed = ParsedClient::new(CLIENT)?;
     let mappings = parsed.extract_mappings()?;
 
-    info!(
-        "Extracted mappings in {} ms: {:#?}",
-        started.elapsed().as_millis(),
-        &mappings
-    );
+    info!("Extracted mappings: {:#?}", &mappings);
 
     let unmapped = mappings.find_unmapped().collect::<Vec<_>>();
 
@@ -26,6 +22,16 @@ fn test_extraction() -> Fallible<()> {
         panic!("Missing packet mappings: {:?}", unmapped);
     } else {
         info!("No unmapped packet types!");
-        Ok(())
     }
+
+    let params = parsed.extract_parameters()?;
+
+    info!("Client parameters: {:?}", params);
+
+    info!(
+        "Total extraction time: {} ms",
+        started.elapsed().as_millis()
+    );
+
+    Ok(())
 }

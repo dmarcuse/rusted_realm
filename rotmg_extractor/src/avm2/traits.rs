@@ -3,6 +3,7 @@
 use super::constants::ConstantPool;
 use super::{Parse, ParseError};
 use bytes::Buf;
+use failure_derive::Fail;
 use serde::{Deserialize, Serialize};
 use std::iter::repeat_with;
 
@@ -198,6 +199,26 @@ pub enum TraitSlotValue<'a> {
     None,
 }
 
+#[derive(Debug, Fail)]
+#[fail(display = "Invalid type conversion")]
+pub struct InvalidType;
+
+impl<'a> TraitSlotValue<'a> {
+    pub fn as_str(self) -> Result<&'a str, InvalidType> {
+        match self {
+            TraitSlotValue::String(s) => Ok(s),
+            _ => Err(InvalidType),
+        }
+    }
+
+    pub fn as_int(self) -> Result<i32, InvalidType> {
+        match self {
+            TraitSlotValue::Int(i) => Ok(i),
+            _ => Err(InvalidType),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct LinkedTraitSlot<'a> {
     pub name: (&'a str, &'a str),
@@ -223,6 +244,9 @@ impl Trait {
                 let value = match data.value_kind {
                     Some(ConstantKind::Int) => {
                         TraitSlotValue::Int(constants.int(data.value_idx as usize))
+                    }
+                    Some(ConstantKind::Utf8) => {
+                        TraitSlotValue::String(constants.string(data.value_idx as usize))
                     }
                     _ => TraitSlotValue::None, // TODO i guess?
                 };
