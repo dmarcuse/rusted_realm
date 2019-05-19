@@ -746,6 +746,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "rotmg_data"
 version = "0.1.0"
 dependencies = [
+ "num 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.91 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -804,7 +805,7 @@ dependencies = [
 
 [[package]]
 name = "rusted_realm"
-version = "0.1.0"
+version = "0.0.0"
 
 [[package]]
 name = "ryu"

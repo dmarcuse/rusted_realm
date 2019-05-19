@@ -4,5 +4,6 @@
 #![deny(bare_trait_objects)]
 
 mod parameters;
+pub mod xml;
 
 pub use parameters::Parameters;
