@@ -4,7 +4,3 @@ members = [
     "rotmg_extractor",
     "rusted_realm",
 ]
-
-[patch.crates-io]
-# https://github.com/open-flash/swf-parser/commit/7c3264bcfe57be7fe9a392d1ad0a618e2680b46e
-swf-parser = { git = "https://github.com/open-flash/swf-parser.git" }
