@@ -7,6 +7,7 @@ Right now, effort is concentrated on libraries tackling specific behavior needed
 ## Components
 
 - rotmg_data - types representing miscellaneous client data, such as build parameters
-- rotmg_networking - networking-related types (i.e. packets) and implementations, using tokio
-- rotmg_extractor - utilities to extract data from the ROTMG client at runtime, available as both a Rust library and an embeddable binary
+- rotmg_packets - types representing ROTMG network packets
+- rotmg_networking - implementation of ROTMG network protocol
+- rotmg_extractor - utilities to extract data from the ROTMG client at runtime
 - rusted_realm (not yet started) - the actual reverse-engineered game client

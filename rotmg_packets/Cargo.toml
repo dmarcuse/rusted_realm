@@ -3,7 +3,7 @@ name = "rotmg_packets"
 version = "0.1.0"
 authors = ["Dominic Marcuse <dominic@marcuse.us>"]
 edition = "2018"
-license = "AGPL-3.0-or-later"
+license = "Apache-2.0"
 
 [dependencies]
 failure = "0.1"
