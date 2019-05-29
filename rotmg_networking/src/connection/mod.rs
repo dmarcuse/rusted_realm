@@ -14,8 +14,8 @@ pub mod raw_packet;
 
 use self::codec::Codec;
 use self::policy::handle_policy_request;
-use crate::mappings::Mappings;
 use futures::{Future, Stream};
+use rotmg_packets::mappings::Mappings;
 use std::convert::identity;
 use std::io::{Error as IoError, Result as IoResult};
 use std::net::SocketAddr;

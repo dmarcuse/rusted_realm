@@ -1,4 +1,4 @@
-//! Internal extensions to third party APIs for convenience
+//! Internal extensions to external party APIs for convenience
 
 use futures::{try_ready, Async, Future, Poll};
 use std::mem::replace;

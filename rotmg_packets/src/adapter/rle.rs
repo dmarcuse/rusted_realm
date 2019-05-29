@@ -19,7 +19,7 @@ use std::result::Result as StdResult;
 ///
 /// Encode a vector of bytes, prefixed with an unsigned 16-bit length:
 /// ```
-/// # use crate::rotmg_networking::adapter::{Adapter, RLE};
+/// # use crate::rotmg_packets::adapter::{Adapter, RLE};
 /// # use std::io::Cursor;
 /// // wrap the bytes
 /// let bytes: RLE<Vec<u8>> = RLE::new(vec![1, 2, 3]);

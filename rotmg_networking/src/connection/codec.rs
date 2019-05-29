@@ -1,12 +1,18 @@
 //! Tokio codec for framing ROTMG packets as `RawPacket` instances
 
 use super::raw_packet::RawPacket;
-use crate::mappings::Mappings;
 use crate::rc4::Rc4;
 use bytes::{Buf, BytesMut};
 use failure_derive::Fail;
+use rotmg_packets::mappings::{Mappings, RC4_LEN};
 use std::io::{Cursor, Error as IoError};
 use tokio::codec::{Decoder, Encoder};
+
+/// Get the two RC4 ciphers
+pub fn get_ciphers(mappings: &Mappings) -> (Rc4, Rc4) {
+    let (key0, key1) = mappings.rc4().split_at(RC4_LEN / 2);
+    (Rc4::new(key0), Rc4::new(key1))
+}
 
 /// The codec for framing and encrypting/decrypting ROTMG packets. This struct
 /// contains the minimum state necessary - just the RC4 ciphers for sending and
@@ -39,14 +45,14 @@ impl Codec {
     /// Construct a new codec for communicating with a game client - i.e. with
     /// this side of the connection acting as the server
     pub fn new_as_server(mappings: &Mappings) -> Self {
-        let (recv_rc4, send_rc4) = mappings.get_ciphers();
+        let (recv_rc4, send_rc4) = get_ciphers(mappings);
         Self { recv_rc4, send_rc4 }
     }
 
     /// Construct a new codec for communicating with a game client - i.e. with
     /// this side of the connection acting as the client
     pub fn new_as_client(mappings: &Mappings) -> Self {
-        let (send_rc4, recv_rc4) = mappings.get_ciphers();
+        let (send_rc4, recv_rc4) = get_ciphers(mappings);
         Self { recv_rc4, send_rc4 }
     }
 }

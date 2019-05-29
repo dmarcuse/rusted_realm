@@ -2,7 +2,6 @@
 //! store RC4 keys.
 
 use crate::packets::PacketType;
-use crate::rc4::Rc4;
 use bimap::BiHashMap;
 use failure_derive::Fail;
 use hex::FromHexError;
@@ -76,9 +75,8 @@ impl Mappings {
         self.mappings.get_by_right(&packet_type).cloned()
     }
 
-    /// Get the two RC4 ciphers
-    pub fn get_ciphers(&self) -> (Rc4, Rc4) {
-        let (key0, key1) = self.binary_rc4.split_at(RC4_LEN / 2);
-        (Rc4::new(key0), Rc4::new(key1))
+    /// Get the binary form of the RC4 key stored in these mappings
+    pub fn rc4(&self) -> &[u8] {
+        &self.binary_rc4
     }
 }

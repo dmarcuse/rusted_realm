@@ -3,7 +3,7 @@
 #![deny(missing_docs)]
 #![deny(bare_trait_objects)]
 
-pub(crate) mod avm2;
+mod avm2;
 mod extractor;
 
 pub use extractor::*;

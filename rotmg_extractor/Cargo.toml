@@ -14,24 +14,18 @@ failure = "0.1"
 failure_derive = "0.1"
 swf-tree = "0.6"
 swf-parser = "0.5"
-rotmg_networking = { path = "../rotmg_networking" }
+rotmg_packets = { path = "../rotmg_packets" }
 bimap = "0.3"
 bytes = "0.4"
 serde = { version = "1.0", features = [ "derive" ] }
-serde_json = { version = "1.0", optional = true }
 rotmg_data = { path = "../rotmg_data" }
-structopt = { version = "0.2", optional = true }
+wasm-bindgen = { version = "0.2", optional = true, features = [ "serde-serialize" ] }
 
 [dev-dependencies]
 simple_logger = "1.0"
 
 [features]
-cli = [ "serde_json", "structopt" ]
+wasm = [ "wasm-bindgen" ]
 
 [lib]
-doc = true
-
-[[bin]]
-name = "rotmg_extractor"
-doc = false
-required-features = [ "cli" ]
+crate-type = ["cdylib", "rlib"]

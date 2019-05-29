@@ -1,7 +1,7 @@
 //! Definitions of packet structures, adapters, and associated data for ROTMG
 //! networking
 
-pub mod packet_data;
+pub mod data;
 
 mod definitions;
 

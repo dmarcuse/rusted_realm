@@ -197,7 +197,7 @@ macro_rules! define_packets {
             /// # Example
             ///
             /// ```
-            /// # use rotmg_networking::packets::{Packet, client::{CancelTrade, AcceptTrade}};
+            /// # use rotmg_packets::packets::{Packet, client::{CancelTrade, AcceptTrade}};
             ///
             /// // create a Packet
             /// let packet = Packet::CancelTrade(CancelTrade {});
@@ -224,13 +224,15 @@ macro_rules! define_packets {
                 }
             }
 
-            /// Create a packet from the given type and contents
-            pub(crate) fn from_bytes(typ: PacketType, contents: &mut dyn Buf) -> Result<Packet> {
+            /// Create a packet from the given type and contents - should not be
+            /// used unless you really know what you're doing!
+            pub unsafe fn from_bytes(typ: PacketType, contents: &mut dyn Buf) -> Result<Packet> {
                 typ.get_deserializer()(contents)
             }
 
-            /// Write the contents of this packet to the given buffer
-            pub(crate) fn to_bytes(&self, buf: &mut dyn BufMut) -> Result<()> {
+            /// Write the contents of this packet to the given buffer - should
+            /// not be used unless you really know what you're doing!
+            pub unsafe fn to_bytes(&self, buf: &mut dyn BufMut) -> Result<()> {
                 self.get_type().get_serializer()(self, buf)
             }
         }
@@ -395,7 +397,7 @@ macro_rules! define_packets {
 
 mod unified_definitions {
     use crate::adapter::{Adapter, Error, Result, RLE};
-    use crate::packets::packet_data::*;
+    use crate::packets::data::*;
     use bytes::{Buf, BufMut};
     use lazy_static::lazy_static;
     use serde::{Deserialize, Serialize};

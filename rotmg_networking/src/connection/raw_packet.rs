@@ -1,11 +1,11 @@
 //! A representation of packets that have been received and decrypted, but have
 //! not yet been deserialized into `Packet` instances
 
-use crate::adapter::Error as AdapterError;
-use crate::mappings::Mappings;
-use crate::packets::{Packet, PacketType};
 use bytes::{Bytes, IntoBuf};
 use failure_derive::Fail;
+use rotmg_packets::adapter::Error as AdapterError;
+use rotmg_packets::mappings::Mappings;
+use rotmg_packets::packets::{Packet, PacketType};
 use std::fmt::Debug;
 
 /// A decrypted and properly framed packet represented as bytes.
@@ -89,7 +89,7 @@ impl RawPacket {
     /// `Adapter` implementation for this packet type (`Error::AdapterError`).
     pub fn to_packet(&self, mappings: &Mappings) -> Result<Packet, Error<u8>> {
         if let Some(typ) = self.packet_type(mappings) {
-            Packet::from_bytes(typ, &mut self.raw_contents().into_buf())
+            unsafe { Packet::from_bytes(typ, &mut self.raw_contents().into_buf()) }
                 .map_err(Error::AdapterError)
         } else {
             Err(Error::UnmappedPacketType(self.packet_id()))
@@ -114,7 +114,7 @@ impl RawPacket {
             buf.push(id);
 
             // serialize the packet
-            packet.to_bytes(&mut buf).map_err(Error::AdapterError)?;
+            unsafe { packet.to_bytes(&mut buf).map_err(Error::AdapterError)? };
 
             // go back and store the total size of the packet
             let len = buf.len() as u32;
