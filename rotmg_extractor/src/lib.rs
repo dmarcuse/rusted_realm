@@ -6,4 +6,7 @@
 mod avm2;
 mod extractor;
 
+#[cfg(feature = "wasm")]
+mod wasm;
+
 pub use extractor::*;
