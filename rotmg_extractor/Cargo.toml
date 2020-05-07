@@ -19,7 +19,7 @@ bimap = "0.3"
 bytes = "0.4"
 serde = { version = "1.0", features = [ "derive" ] }
 rotmg_data = { path = "../rotmg_data" }
-wasm-bindgen = { version = "0.2", optional = true, features = [ "serde-serialize" ] }
+wasm-bindgen = { version = "0.2.62", optional = true, features = [ "serde-serialize" ] }
 
 [dev-dependencies]
 simple_logger = "1.0"
